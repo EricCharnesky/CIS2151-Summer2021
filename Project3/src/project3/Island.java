@@ -6,19 +6,96 @@ import java.util.Random;
 public class Island {
 
     ArrayList<ArrayList<Space>> grid;
+    ArrayList<Player> players;
+    Player owner;
 
-    public Island() {
+    public Island(Player owner) {
+
+        this.owner = owner;
+
+        players = new ArrayList<>();
         grid = new ArrayList<ArrayList<Space>>();
         Random random = new Random();
 
         for (int rowIndex = 0; rowIndex < 10; rowIndex++) {
             grid.add(new ArrayList<Space>());
             for (int columnIndex = 0; columnIndex < 12; columnIndex++) {
-                grid.get(rowIndex).add(
-                        new Space("Random space: "
-                                + Integer.toString(random.nextInt(1000))));
+
+                int randomNumber = random.nextInt(10);
+
+                Space newSpace = new Space("empty space");
+
+                if (randomNumber == 4) {
+                    newSpace = new BuildableSpace();
+                } else if (randomNumber == 5) {
+                    newSpace = new ChopableSpace();
+                } else if (randomNumber == 6) {
+                    newSpace = new DiggableSpace();
+                } else if (randomNumber == 7) {
+                    newSpace = new Space("space with a hammer");
+                    newSpace.setTool(new Tool(Tool.HAMMER));
+                } else if (randomNumber == 8) {
+                    newSpace = new Space("space with an axe");
+                    newSpace.setTool(new Tool(Tool.AXE));
+                } else if (randomNumber == 9) {
+                    newSpace = new Space("space with a shovel");
+                    newSpace.setTool(new Tool(Tool.SHOVEL));
+                }
+
+                grid.get(rowIndex).add(newSpace);
+
             }
         }
+    }
+
+    public Tool pickupTool(Player player) {
+
+        Space space = grid.get(player.getLocationX()).get(player.getLocationY());
+        Tool tool = null;
+        if (space.hasTool() && (player.equals(owner) || owner.getFriends().contains(player))) {
+            tool = space.getTool();
+            space.setTool(null);
+            space.setDescription("empty space");
+        }
+
+        return tool;
+
+    }
+
+    public boolean canDigSpace(Player player) {
+        return player.canDig()
+                && isDiggable.class.isAssignableFrom(
+                        grid.get(player.getLocationX()).get(player.getLocationY()).getClass())
+                && (player.equals(owner) || owner.getFriends().contains(player));
+
+    }
+
+    public boolean canChopSpace(int rowIndex, int columnIndex, Player player) {
+        return player.canChop()
+                && isChopable.class.isAssignableFrom(
+                        grid.get(player.getLocationX()).get(player.getLocationY()).getClass())
+                && (player.equals(owner) || owner.getFriends().contains(player));
+
+    }
+
+    public boolean canBuildSpace(int rowIndex, int columnIndex, Player player) {
+        return player.canBuild()
+                && isBuildable.class.isAssignableFrom(
+                        grid.get(player.getLocationX()).get(player.getLocationY()).getClass())
+                && (player.equals(owner) || owner.getFriends().contains(player));
+
+    }
+
+    public Space getSpace(int rowIndex, int columnIndex) {
+        return grid.get(rowIndex).get(columnIndex);
+    }
+
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
+    public boolean removePlayer(Player player) {
+        return players.remove(player);
     }
 
     @Override
