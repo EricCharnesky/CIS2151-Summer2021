@@ -45,3 +45,6 @@ hs_err_pid*
 /Project4/build/
 /HelloWorldGUI/nbproject/private/
 /HelloWorldGUI/build/
+/GUIControls/nbproject/private/
+/GUIControls/build/
+/GUIControls/dist/
